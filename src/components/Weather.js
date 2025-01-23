@@ -7,7 +7,7 @@ const Weather = () => {
   const [weather, setWeather] = useState(null);
   const [previousSearches, setPreviousSearches] = useState([]);
   const [error, setError] = useState("");
-  const [unit, setUnit] = useState("C"); // 'C' for Celsius, 'F' for Fahrenheit
+  const [unit, setUnit] = useState("C");
 
   const handleSearch = async () => {
     if (!search.trim()) return;
@@ -39,12 +39,11 @@ const Weather = () => {
       setWeather(null);
     }
 
-    setSearch(""); // Clear input field after search
+    setSearch(""); 
   };
 
-  // Convert Celsius to Fahrenheit with controlled decimal places
   const convertToFahrenheit = (celsius) => {
-    return ((celsius * 9) / 5 + 32).toFixed(1); // Rounded to 1 decimal place
+    return ((celsius * 9) / 5 + 32).toFixed(1);
   };
 
   return (
@@ -80,19 +79,18 @@ const Weather = () => {
               <span>Humidity</span>
             </div>
             <div className="col">
-              <p>{weather.wind.speed} m/s</p> {/* wind speed in meters per second */}
+              <p>{weather.wind.speed} m/s</p>
               <span>Wind Speed</span>
             </div>
           </div>
 
-          {/* Toggle for Celsius / Fahrenheit */}
           <button className="change-to-farenheit" onClick={() => setUnit(unit === "C" ? "F" : "C")}>
             Switch to {unit === "C" ? "°F" : "°C"}
           </button>
         </div>
       )}
 
-      {/* Previous Searches */}
+
       {previousSearches.length > 0 && (
         <div className="previous-searches">
           <h3>Previous Searches</h3>
