@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import "./Weather.css";
 import { FaSearch } from "react-icons/fa";
-import clear_icon from "../assets/clear.jpg";
-import cloud_icon from "../assets/cloud.jpg";
-import drizzle_icon from "../assets/drizzle.jpg";
-import rain_icon from "../assets/rain.jpg";
 
 const Weather = () => {
   const [search, setSearch] = useState("");
@@ -16,14 +12,14 @@ const Weather = () => {
   const handleSearch = async () => {
     if (!search.trim()) return;
 
-    const API_URL = `http://api.weatherapi.com/v1/current.json?key=ce25608afb2848baa8f11206243001&q=${search}`;
+    const API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${search}&units=metric&appid=895284fb2d2c50a520ea537456963d9c`;
 
     try {
       const response = await fetch(API_URL);
       const data = await response.json();
 
-      if (data.error) {
-        setError(data.error.message);
+      if (data.cod !== 200) {
+        setError(data.message);
         setWeather(null);
       } else {
         setWeather(data);
@@ -31,9 +27,9 @@ const Weather = () => {
 
         setPreviousSearches((prev) => {
           const newSearch = {
-            city: data.location.name,
-            temp: data.current.temp_c,
-            condition: data.current.condition.text,
+            city: data.name,
+            temp: data.main.temp,
+            condition: data.weather[0].description,
           };
           return [newSearch, ...prev.filter((item) => item.city !== newSearch.city)];
         });
@@ -46,19 +42,9 @@ const Weather = () => {
     setSearch(""); // Clear input field after search
   };
 
-  // Convert Celsius to Fahrenheit
+  // Convert Celsius to Fahrenheit with controlled decimal places
   const convertToFahrenheit = (celsius) => {
-    return (celsius * 9/5) + 32;
-  };
-
-  const getWeatherIcon = (condition) => {
-    const conditionLower = condition.toLowerCase();
-    if (conditionLower.includes("clear")) return clear_icon;
-    if (conditionLower.includes("cloud")) return cloud_icon;
-    if (conditionLower.includes("drizzle")) return drizzle_icon;
-    if (conditionLower.includes("rain")) return rain_icon;
-    
-    return clear_icon; // Default to clear weather
+    return ((celsius * 9) / 5 + 32).toFixed(1); // Rounded to 1 decimal place
   };
 
   return (
@@ -81,20 +67,20 @@ const Weather = () => {
       {weather && (
         <div>
           <img
-            src={getWeatherIcon(weather.current.condition.text)}
+            src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}.png`}
             alt="Weather Icon"
             className="weather-icon"
           />
-          <p>{unit === "C" ? weather.current.temp_c : convertToFahrenheit(weather.current.temp_c)}°{unit}</p>
-          <p>{weather.location.name}</p>
+          <p>{unit === "C" ? weather.main.temp : convertToFahrenheit(weather.main.temp)}°{unit}</p>
+          <p>{weather.name}</p>
 
           <div className="weather-data">
             <div className="col">
-              <p>{weather.current.humidity}%</p>
+              <p>{weather.main.humidity}%</p>
               <span>Humidity</span>
             </div>
             <div className="col">
-              <p>{weather.current.wind_kph} km/h</p>
+              <p>{weather.wind.speed} m/s</p> {/* wind speed in meters per second */}
               <span>Wind Speed</span>
             </div>
           </div>
